@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nginx-allow-http
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-deploy
+  policyTypes:
+  - Ingress
+  ingress:
+  - from: []
+    ports:
+    - protocol: TCP
+      port: 8080                   #Allow all users to connect to my app but only on port 8080

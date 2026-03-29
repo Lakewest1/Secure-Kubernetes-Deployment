@@ -143,10 +143,11 @@ spec:
 * Resource limits
 * Least privilege configuration
 
+
+---
 ### Decision : Container Base Image Selection
 
 I initially used a lightweight Alpine-based image to reduce the attack surface. However, after identifying security risks related to root execution, I switched to an unprivileged NGINX image (nginxinc/nginx-unprivileged) to enforce non-root execution in line with Kubernetes security best practices.
----
 
 ### ✅ RBAC
 
