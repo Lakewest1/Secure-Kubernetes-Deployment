@@ -44,6 +44,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}      #Added Azure to Github login using OIDS
 
+          # Adding Tags to the push image as it logins and push to Azure Acr
       - name:    Login to Azure container Registry
         run : |
             az acr login --name securek8sacr01
