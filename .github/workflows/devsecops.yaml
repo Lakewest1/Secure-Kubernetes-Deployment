@@ -11,11 +11,12 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+  id-token: write      #Giving Github permission to use OIDC token to push to azure
 
 env:
   IMAGE_NAME: secure-nginx
   IMAGE_TAG: ${{ github.sha }}
+  REGISTRY : securek8sacr01.azurecr.io   #To push to Azure Acr
 
 jobs:
   security:
@@ -41,7 +42,22 @@ jobs:
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}    
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}      #Added Azure to Github login using OIDS
+
+      - name:    Login to Azure container Registry
+        run : |
+            az acr login --name securek8sacr01
+        
+      - name:   Tag Docker Image For ACR 
+        run: |
+          docker tag \
+            ${{ env.IMAGE_NAME}}:${{ env.IMAGE_NAME}} \
+            ${{ env.REGISTRY}}/${{ env.IMAGE_NAME}}:${{ env.IMAGE_TAG}}
+
+      - name:   PUSH Docker Image to ACR 
+        run: |
+          docker push \
+            ${{ env.REGISTRY}}/${{ env.IMAGE_NAME}}:${{ env.IMAGE_TAG}}
 
       - name: Gitleaks secret scan
         uses: gitleaks/gitleaks-action@v3
