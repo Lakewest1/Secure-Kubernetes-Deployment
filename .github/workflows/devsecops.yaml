@@ -1,0 +1,46 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_NAME: secure-nginx
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
+
+      - name: Trivy container image scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
