@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: nginx-sa   # User for my app
+  name: nginx-sa   # Identity used by my application
   namespace: default
   labels:
     app: nginx-deploy
@@ -16,10 +16,10 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["pods"]
-  verbs: ["get", "list"]     # The user can only view pods but can't create or delete pods
+  verbs: ["get", "list"]     # Can only view pods but cannot create or delete pods
 
 ---
-# Role binding to give the user the role
+# Bind the role to the ServiceAccount
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -34,5 +34,9 @@ subjects:
 roleRef:
   kind: Role
   name: nginx-role
-  apiGroup: rbac.authorization.k8s.io    # I only give nginx-sa the permission it needs in case it gets compromised by hackers
-                                      # PRINCIPLE OF LEAST PRIVILEGE
+  apiGroup: rbac.authorization.k8s.io
+
+# Principle of Least Privilege:
+# nginx-sa receives only the permissions required by the workload.
+# If the workload is compromised, the attacker's Kubernetes permissions
+# are limited to getting and listing pods in this namespace.

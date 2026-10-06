@@ -18,9 +18,10 @@ spec:
         app: nginx-deploy
 
     spec:
+      serviceAccountName: nginx-sa
       containers:
       - name: my-nginx-app1
-        image: lakewest/my-nginx-app1:latest
+        image: securek8sacr01.azurecr.io/secure-nginx:f12214058cd0e11d8b77dbe5ce0de799a777801f #Update with AKS Image
         imagePullPolicy: Always
 
         ports:
